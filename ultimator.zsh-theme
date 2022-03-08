@@ -1,92 +1,227 @@
 #
 # Ultimator ZSH theme
 #
+#
+# Requirements:
+# -------------
+# 1. A Powerline patched font
+# 2. zsh-git prompt
+#
 # The basic structure is taken from the agnoster theme
-# The git_super_status command needs zsh-git-prompt
-# A slightly adapted version can be found here https://github.com/Ultimator14/zsh-git-prompt
+# Zsh-git-prompt is required for the git_super_status command
+# This can be changed to use the git library of OMZ
+# by changing some of the ZSH_THEME_GIT_PROMPT_XXX variables
+# and including git.zsh from OMZ/lib
+#
+#
+# License:
+# --------
+# MIT
+#
+#
+# Links:
+# ------
+# - https://github.com/powerline/fonts
+# - https://github.com/Ultimator14/zsh-git-prompt
+# - https://github.com/ohmyzsh/ohmyzsh/blob/master/themes/agnoster.zsh-theme
+# - https://github.com/dbestevez/agitnoster-theme
 #
 
 # Arrow character from agnoster theme
 SEGMENT_SEPARATOR=$'\ue0b0'
 
+# Variable holding the current background color to connect segments
+CURRENT_BG_COLOR="default"
+
 #
-# Functions
+# Helper functions
 #
 
-function prompt_main_fg() {
-    # Color definitions
-    if [ $(id -u) -eq 0 ]; then
-        # user is root
-        local user_fg="%{$fg_bold[red]%}"
-        local at_fg="%{$fg_bold[red]%}"
-        local computer_fg="%{$fg_bold[red]%}"
-    else
-        local user_fg="%{$fg_bold[red]%}"
-        local at_fg="%{$fg_bold[green]%}"
-        local computer_fg="%{$fg_bold[blue]%}"
-    fi
+prompt_start() {
+    # start a new prompt with given foreground and background
+    # $1 = foreground
+    # $2 = background
+    echo -n "%{$bg[$1]%}"
+    CURRENT_BG_COLOR="$1"
+}
+
+prompt_segment_transition() {
+    # $1 = new background
+    echo -n "%{$fg_no_bold[${CURRENT_BG_COLOR}]%}%{$bg[$1]%}${SEGMENT_SEPARATOR}"
+    CURRENT_BG_COLOR="$1"
+}
+
+prompt_reset_color() {
+    echo -n "%{$reset_color%}"
+}
+
+prompt_space() {
+    echo -n " "
+}
+
+#
+# Prompt functions
+#
+
+function prompt_ret_status() {
+    # $1 = success color
+    # $2 = failure color
+    # $3 = success char
+    # $4 = failure char
+    local success="%{$fg_bold[$1]%} $3 "
+    local failure="%{$fg_bold[$2]%} $4 "
+
+    # Last command evaluation
+    echo -n "%(?:${success}:${failure})"
+}
+
+function prompt_ret_status2() {
+    # alternative for end of shell
+    # $1 = success color
+    # $2 = failure color
+    local success="%{$fg_bold[$1]%}"
+    local failure="%{$fg_bold[$2]%}"
+
+    # Last command evaluation
+    echo -n "%(?:${success}:${failure})$"
+}
+
+function prompt_main() {
+    # $1 = user_fg
+    # $2 = at_fg
+    # $3 = computer_fg
+    local user="%{$fg_bold[$1]%}%n"
+    local at="%{$fg_bold[$2]%}@"
+    local computer="%{$fg_bold[$3]%}%m"
 
     # Main Prompt fg creation (user@computername)
-    echo -n "${user_fg}%n${at_fg}@${computer_fg}%m "
+    echo -n "${user}${at}${computer}"
 }
 
 function prompt_dir() {
-    # Color definitions
+    # Dir prompt creation
+    # $1 = foreground color
+    echo -n "%{$fg_no_bold[$1]%} %(5~|.../%3~|%~) "
+}
+
+function prompt_git() {
+    # Git color shortcuts
+    # $1 = git_fg
+    # $2 = git_bg
+    # $3 = git_fg_inv
+    # $4 = git_bg_inv
+    local git_fg="%{$fg_no_bold[black]%}"
+    local git_bg="%{$bg[yellow]%}"
+
+    # Set git variables
+    ZSH_THEME_GIT_PROMPT_PREFIX="${git_fg} \ue0a0 "
+    ZSH_THEME_GIT_PROMPT_SUFFIX="${git_bg} "
+
+    ZSH_THEME_GIT_PROMPT_DIRTY="${git_fg}${git_bg}✗"
+    ZSH_THEME_GIT_PROMPT_CLEAN="${git_fg}${git_bg}✔"
+
+    ZSH_THEME_GIT_PROMPT_BRANCH="${git_fg}${git_bg}"
+    ZSH_THEME_GIT_PROMPT_SEPARATOR="${git_fg}${git_bg}|"
+    ZSH_THEME_GIT_PROMPT_UNTRACKED="${git_fg}${git_bg}…"
+    ZSH_THEME_GIT_PROMPT_CHANGED="${git_fg}${git_bg}⎊"
+    ZSH_THEME_GIT_PROMPT_STAGED="${git_fg}${git_bg}●"
+    ZSH_THEME_GIT_PROMPT_CONFLICTS="${git_fg}${git_bg}✗"
+    ZSH_THEME_GIT_PROMPT_AHEAD="${git_fg}${git_bg}↑"
+    ZSH_THEME_GIT_PROMPT_BEHIND="${git_fg}${git_bg}↓"
+
+    git_super_status
+}
+
+#
+# Set prompt
+#
+build_prompt() {
+    # change colors if user is root
     if [ $(id -u) -eq 0 ]; then
-        # user is root
-        local dir_fg="%{$fg_no_bold[black]%}"
-        local dir_bg="%{$bg[red]%}"
-        local dir_fg_inv="%{$fg_no_bold[red]%}"
-        local dir_bg_inv="%{$bg[default]%}"
+        # colors for main prompt
+        local color_user_fg="red"
+        local color_at_fg="red"
+        local color_computer_fg="red"
+
+        # colors for dir prompt
+        local color_dir_bg="red"
     else
-        local dir_fg="%{$fg_no_bold[black]%}"
-        local dir_bg="%{$bg[blue]%}"
-        local dir_fg_inv="%{$fg_no_bold[blue]%}"
-        local dir_bg_inv="%{$bg[default]%}"
+        # colors for main prompt
+        local color_user_fg="red"
+        local color_at_fg="green"
+        local color_computer_fg="blue"
+
+        # colors for dir prompt
+        local color_dir_bg="blue"
     fi
 
-    # Dir prompt creation
-    echo -n "${dir_bg}${dir_fg}${SEGMENT_SEPARATOR}"
-    echo -n "${dir_fg} %(5~|.../%3~|%~) ${dir_bg_inv}${dir_fg_inv}"
+    prompt_start "black"
+    prompt_main "${color_user_fg}" "${color_at_fg}" "${color_computer_fg}"
+    prompt_space
+    prompt_segment_transition "${color_dir_bg}"
+    prompt_dir "black"
+    # git
+    script_output=$(prompt_git)
+    if [ ! -z $script_output ]
+    then
+        # git has output
+        prompt_segment_transition "yellow"
+        echo -n "$script_output"
+    fi
+    prompt_segment_transition "default"
+    prompt_reset_color
+    prompt_space
+    prompt_ret_status2 "green" "red"
+    prompt_reset_color
+    prompt_space
 }
 
-function prompt_ret_status() {
-    local success_fg="%{$fg_bold[green]%}"
-    local failure_fg="%{$fg_bold[red]%}"
+build_prompt2() {
+    # change colors if user is root
+    if [ $(id -u) -eq 0 ]; then
+        # colors for main prompt
+        local color_user_fg="red"
+        local color_at_fg="red"
+        local color_computer_fg="red"
 
-    # Last command evaluation
-    echo -n "%(?:${success_fg}$%{$reset_color%} :${failure_fg}$%{$reset_color%} )"
+        # colors for dir prompt
+        local color_dir_bg="red"
+    else
+        # colors for main prompt
+        local color_user_fg="red"
+        local color_at_fg="green"
+        local color_computer_fg="blue"
+
+        # colors for dir prompt
+        local color_dir_bg="blue"
+    fi
+
+    prompt_start "white"
+    prompt_ret_status "green" "red" "✔" "✘"
+    prompt_segment_transition "black"
+    prompt_space
+    prompt_main "${color_user_fg}" "${color_at_fg}" "${color_computer_fg}"
+    prompt_space
+    prompt_segment_transition "${color_dir_bg}"
+    prompt_dir "black"
+    # git
+    script_output=$(prompt_git)
+    if [ ! -z $script_output ]
+    then
+        # git has output
+        prompt_segment_transition "yellow"
+        echo -n "$script_output"
+    fi
+    prompt_segment_transition "default"
+    prompt_reset_color
+    prompt_space
 }
 
-# Git color shortcuts
-local git_fg="%{$fg_no_bold[black]%}"
-local git_bg="%{$bg[yellow]%}"
-local git_fg_inv="%{$fg_no_bold[yellow]%}"
-local git_bg_inv="%{$bg[default]%}"
+# Default prompt
+PROMPT='$(build_prompt)'
 
-# Set git variables
-ZSH_THEME_GIT_PROMPT_PREFIX="${git_bg}${SEGMENT_SEPARATOR} ${git_fg}\ue0a0 "
-ZSH_THEME_GIT_PROMPT_SUFFIX="${git_bg} ${git_bg_inv}${git_fg_inv}"
+# Alternatively with error status at the beginning
+#PROMPT='$(build_prompt)'
 
-ZSH_THEME_GIT_PROMPT_DIRTY="${git_fg}${git_bg}✗"
-ZSH_THEME_GIT_PROMPT_CLEAN="${git_fg}${git_bg}✔"
-
-ZSH_THEME_GIT_PROMPT_BRANCH="${git_fg}${git_bg}"
-ZSH_THEME_GIT_PROMPT_SEPARATOR="${git_fg}${git_bg}|"
-ZSH_THEME_GIT_PROMPT_UNTRACKED="${git_fg}${git_bg}…"
-ZSH_THEME_GIT_PROMPT_CHANGED="${git_fg}${git_bg}⎊"
-ZSH_THEME_GIT_PROMPT_STAGED="${git_fg}${git_bg}●"
-ZSH_THEME_GIT_PROMPT_CONFLICTS="${git_fg}${git_bg}✗"
-ZSH_THEME_GIT_PROMPT_AHEAD="${git_fg}${git_bg}↑"
-ZSH_THEME_GIT_PROMPT_BEHIND="${git_fg}${git_bg}↓"
-
-
-# Set prompt
-PROMPT='%{$bg[black]%}$(prompt_main_fg) $(prompt_dir)$(git_super_status)${SEGMENT_SEPARATOR}%{${reset_color}%} $(prompt_ret_status)'
 # Clear rprompt (set by git-prompt)
 RPROMPT=""
-
-unset git_fg
-unset git_bg
-unset git_fg_inv
-unset git_bg_inv
