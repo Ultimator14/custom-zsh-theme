@@ -9,9 +9,6 @@
 #
 # The basic structure is taken from the agnoster theme
 # Zsh-git-prompt is required for the git_super_status command
-# This can be changed to use the git library of OMZ
-# by changing some of the ZSH_THEME_GIT_PROMPT_XXX variables
-# and including git.zsh from OMZ/lib
 #
 #
 # License:
@@ -40,13 +37,14 @@ CURRENT_BG_COLOR="default"
 prompt_start() {
     # start a new prompt with given foreground and background
     # $1 = foreground
-    # $2 = background
     echo -n "%{$bg[$1]%}"
     CURRENT_BG_COLOR="$1"
 }
 
 prompt_segment_transition() {
-    # $1 = new background
+    # segment prompt with new segment being the default color
+    # (used at the end of the segments)
+    # IMPORTANT: transition to default is not possible between segments
     echo -n "%{$fg_no_bold[${CURRENT_BG_COLOR}]%}%{$bg[$1]%}${SEGMENT_SEPARATOR}"
     CURRENT_BG_COLOR="$1"
 }
@@ -64,70 +62,54 @@ prompt_space() {
 #
 
 function prompt_ret_status() {
+    # Last command evaluation
     # $1 = success color
     # $2 = failure color
     # $3 = success char
     # $4 = failure char
-    local success="%{$fg_bold[$1]%} $3 "
-    local failure="%{$fg_bold[$2]%} $4 "
-
-    # Last command evaluation
-    echo -n "%(?:${success}:${failure})"
+    echo -n "%(?:%{$fg_bold[$1]%} $3 :%{$fg_bold[$2]%} $4 )"
 }
 
 function prompt_ret_status2() {
-    # alternative for end of shell
+    # Last command evaluation alternative for end of shell
     # $1 = success color
     # $2 = failure color
-    local success="%{$fg_bold[$1]%}"
-    local failure="%{$fg_bold[$2]%}"
-
-    # Last command evaluation
-    echo -n "%(?:${success}:${failure})$"
+    echo -n "%(?:%{$fg_bold[$1]%}:%{$fg_bold[$2]%})$"
 }
 
 function prompt_main() {
-    # $1 = user_fg
-    # $2 = at_fg
-    # $3 = computer_fg
-    local user="%{$fg_bold[$1]%}%n"
-    local at="%{$fg_bold[$2]%}@"
-    local computer="%{$fg_bold[$3]%}%m"
-
     # Main Prompt fg creation (user@computername)
-    echo -n "${user}${at}${computer}"
+    # $1 = username foreground
+    # $2 = at foreground
+    # $3 = computername foreground
+    echo -n "%{$fg_bold[$1]%}%n%{$fg_bold[$2]%}@%{$fg_bold[$3]%}%m"
 }
 
 function prompt_dir() {
     # Dir prompt creation
-    # $1 = foreground color
+    # $1 = foreground
     echo -n "%{$fg_no_bold[$1]%} %(5~|.../%3~|%~) "
 }
 
 function prompt_git() {
     # Git color shortcuts
-    # $1 = git_fg
-    # $2 = git_bg
-    # $3 = git_fg_inv
-    # $4 = git_bg_inv
-    local git_fg="%{$fg_no_bold[black]%}"
-    local git_bg="%{$bg[yellow]%}"
+    # $1 = foreground
+    # $2 = background
+    local git_colors="%{$fg_no_bold[$1]%}%{$bg[$2]%}"
 
     # Set git variables
-    ZSH_THEME_GIT_PROMPT_PREFIX="${git_fg} \ue0a0 "
-    ZSH_THEME_GIT_PROMPT_SUFFIX="${git_bg} "
-
-    ZSH_THEME_GIT_PROMPT_DIRTY="${git_fg}${git_bg}✗"
-    ZSH_THEME_GIT_PROMPT_CLEAN="${git_fg}${git_bg}✔"
-
-    ZSH_THEME_GIT_PROMPT_BRANCH="${git_fg}${git_bg}"
-    ZSH_THEME_GIT_PROMPT_SEPARATOR="${git_fg}${git_bg}|"
-    ZSH_THEME_GIT_PROMPT_UNTRACKED="${git_fg}${git_bg}…"
-    ZSH_THEME_GIT_PROMPT_CHANGED="${git_fg}${git_bg}⎊"
-    ZSH_THEME_GIT_PROMPT_STAGED="${git_fg}${git_bg}●"
-    ZSH_THEME_GIT_PROMPT_CONFLICTS="${git_fg}${git_bg}✗"
-    ZSH_THEME_GIT_PROMPT_AHEAD="${git_fg}${git_bg}↑"
-    ZSH_THEME_GIT_PROMPT_BEHIND="${git_fg}${git_bg}↓"
+    ZSH_THEME_GIT_PROMPT_PREFIX="${git_colors} \ue0a0 "
+    ZSH_THEME_GIT_PROMPT_SUFFIX="${git_colors} "
+    ZSH_THEME_GIT_PROMPT_DIRTY="${git_colors}✗"
+    ZSH_THEME_GIT_PROMPT_CLEAN="${git_colors}✔"
+    ZSH_THEME_GIT_PROMPT_BRANCH="${git_colors}"
+    ZSH_THEME_GIT_PROMPT_SEPARATOR="${git_colors}|"
+    ZSH_THEME_GIT_PROMPT_UNTRACKED="${git_colors}…"
+    ZSH_THEME_GIT_PROMPT_CHANGED="${git_colors}⎊"
+    ZSH_THEME_GIT_PROMPT_STAGED="${git_colors}●"
+    ZSH_THEME_GIT_PROMPT_CONFLICTS="${git_colors}✗"
+    ZSH_THEME_GIT_PROMPT_AHEAD="${git_colors}↑"
+    ZSH_THEME_GIT_PROMPT_BEHIND="${git_colors}↓"
 
     git_super_status
 }
@@ -161,7 +143,7 @@ build_prompt() {
     prompt_segment_transition "${color_dir_bg}"
     prompt_dir "black"
     # git
-    script_output=$(prompt_git)
+    script_output=$(prompt_git "black" "yellow")
     if [ ! -z $script_output ]
     then
         # git has output
@@ -205,7 +187,7 @@ build_prompt2() {
     prompt_segment_transition "${color_dir_bg}"
     prompt_dir "black"
     # git
-    script_output=$(prompt_git)
+    script_output=$(prompt_git "black" "yellow")
     if [ ! -z $script_output ]
     then
         # git has output
@@ -221,7 +203,7 @@ build_prompt2() {
 PROMPT='$(build_prompt)'
 
 # Alternatively with error status at the beginning
-#PROMPT='$(build_prompt)'
+#PROMPT='$(build_prompt2)'
 
-# Clear rprompt (set by git-prompt)
+# Clear rprompt
 RPROMPT=""
