@@ -25,7 +25,7 @@
 #
 
 # Arrow character from agnoster theme
-SEGMENT_SEPARATOR='\Ue0b0'
+SEGMENT_SEPARATOR='%{\Ue0b0%G%}'
 
 # Variable holding the current background color to connect segments
 CURRENT_BG_COLOR="default"
@@ -98,18 +98,18 @@ function prompt_git() {
     local git_colors="%{$fg_no_bold[$1]%}%{$bg[$2]%}"
 
     # Set git variables
-    ZSH_THEME_GIT_PROMPT_PREFIX="${git_colors} \ue0a0 "
+    ZSH_THEME_GIT_PROMPT_PREFIX="${git_colors} %{\Uf126%G%} "   # branch (alternative e010)
     ZSH_THEME_GIT_PROMPT_SUFFIX="${git_colors} "
-    ZSH_THEME_GIT_PROMPT_DIRTY="${git_colors}✗"
-    ZSH_THEME_GIT_PROMPT_CLEAN="${git_colors}✔"
+    ZSH_THEME_GIT_PROMPT_DIRTY="${git_colors}%{\Uf00d%G%}"      # x
+    ZSH_THEME_GIT_PROMPT_CLEAN="${git_colors}%{\Uf00c%G%}"      # checkmark
     ZSH_THEME_GIT_PROMPT_BRANCH="${git_colors}"
     ZSH_THEME_GIT_PROMPT_SEPARATOR="${git_colors}|"
-    ZSH_THEME_GIT_PROMPT_UNTRACKED="${git_colors}…"
-    ZSH_THEME_GIT_PROMPT_CHANGED="${git_colors}⎊"
-    ZSH_THEME_GIT_PROMPT_STAGED="${git_colors}●"
-    ZSH_THEME_GIT_PROMPT_CONFLICTS="${git_colors}✗"
-    ZSH_THEME_GIT_PROMPT_AHEAD="${git_colors}↑"
-    ZSH_THEME_GIT_PROMPT_BEHIND="${git_colors}↓"
+    ZSH_THEME_GIT_PROMPT_UNTRACKED="${git_colors}%{\Uf6d7%G%}"  # dots
+    ZSH_THEME_GIT_PROMPT_CHANGED="${git_colors}%{\Uf62f%G%}"    # empty circle
+    ZSH_THEME_GIT_PROMPT_STAGED="${git_colors}%{\Uf62e%G%}"     # full circle
+    ZSH_THEME_GIT_PROMPT_CONFLICTS="${git_colors}%{\Uf0e7%G%}"  # flash
+    ZSH_THEME_GIT_PROMPT_AHEAD="${git_colors}%{\Uf176%G%}"      # arrow up
+    ZSH_THEME_GIT_PROMPT_BEHIND="${git_colors}%{\Uf175%G%}"     # arrow down
 
     git_super_status
 }
@@ -120,7 +120,7 @@ function prompt_virtualenv() {
     if [[ -n $VIRTUAL_ENV ]]; then
         # https://zsh.sourceforge.io/Doc/Release/Expansion.html#Modifiers
         # same as basename $VIRTUAL_ENV | <replace % with %%>
-        echo -n "%{$fg_no_bold[$1]%} ${VIRTUAL_ENV:t:gs/%/%%} "
+        echo -n "%{$fg_no_bold[$1]%} %{\Ue235%G%} ${VIRTUAL_ENV:t:gs/%/%%} "
     fi
 }
 
@@ -211,7 +211,7 @@ build_prompt2() {
 
     # ret_status
     prompt_start "white"
-    prompt_ret_status "green" "red" "✔" "✘"
+    prompt_ret_status "green" "red" "\Uf00c" "\Uf00d"
 
     # user@computer
     prompt_segment_transition "black"
