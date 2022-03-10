@@ -25,7 +25,7 @@
 #
 
 # Arrow character from agnoster theme
-SEGMENT_SEPARATOR=$'\ue0b0'
+SEGMENT_SEPARATOR='\Ue0b0'
 
 # Variable holding the current background color to connect segments
 CURRENT_BG_COLOR="default"
