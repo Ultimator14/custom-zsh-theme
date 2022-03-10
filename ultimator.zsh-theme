@@ -125,6 +125,18 @@ function prompt_virtualenv() {
     fi
 }
 
+function prompt_jobs() {
+    # $1 = foreground
+    # $2 = running jobs symbol
+    # $3 = suspended jobs symbol
+    local running_jobs=$(jobs -r | wc -l)
+    local suspended_jobs=$(jobs -s | wc -l)
+    if [ $running_jobs -gt 0 ] || [ $suspended_jobs -gt 0 ]
+    then
+        echo -n "%{$fg_no_bold[$1]%} %{$2%G%}$running_jobs %{$3%G%}$suspended_jobs "
+    fi
+}
+
 #
 # Set prompt
 #
@@ -156,6 +168,15 @@ build_prompt() {
     # dir
     prompt_segment_transition "${color_dir_bg}"
     prompt_dir "black"
+
+    # jobs
+    local jobs_output=$(prompt_jobs "black" "\Uf28d" "\Uf28e")
+    if [ ! -z $jobs_output ]
+    then
+        # jobs has output
+        prompt_segment_transition "magenta"
+        echo -n "$jobs_output"
+    fi
 
     # virtualenv
     local venv_output=$(prompt_virtualenv "black" "\Ue235")
@@ -219,6 +240,15 @@ build_prompt2() {
     # dir
     prompt_segment_transition "${color_dir_bg}"
     prompt_dir "black"
+
+    # jobs
+    local jobs_output=$(prompt_jobs "black" "\Uf28d" "\Uf28e")
+    if [ ! -z $jobs_output ]
+    then
+        # jobs has output
+        prompt_segment_transition "magenta"
+        echo -n "$jobs_output"
+    fi
 
     # virtualenv
     local venv_output=$(prompt_virtualenv "black" "\Ue235")
