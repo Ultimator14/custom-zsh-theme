@@ -116,11 +116,12 @@ function prompt_git() {
 
 function prompt_virtualenv() {
     # $1 = foreground
+    # $2 = symbol
     # from https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/virtualenv/virtualenv.plugin.zsh
     if [[ -n $VIRTUAL_ENV ]]; then
         # https://zsh.sourceforge.io/Doc/Release/Expansion.html#Modifiers
         # same as basename $VIRTUAL_ENV | <replace % with %%>
-        echo -n "%{$fg_no_bold[$1]%} %{\Ue235%G%} ${VIRTUAL_ENV:t:gs/%/%%} "
+        echo -n "%{$fg_no_bold[$1]%} %{$2%G%} ${VIRTUAL_ENV:t:gs/%/%%} "
     fi
 }
 
@@ -157,7 +158,7 @@ build_prompt() {
     prompt_dir "black"
 
     # virtualenv
-    local venv_output=$(prompt_virtualenv "black")
+    local venv_output=$(prompt_virtualenv "black" "\Ue235")
     if [ ! -z $venv_output ]
     then
         # venv has output
@@ -220,7 +221,7 @@ build_prompt2() {
     prompt_dir "black"
 
     # virtualenv
-    local venv_output=$(prompt_virtualenv "black")
+    local venv_output=$(prompt_virtualenv "black" "\Ue235")
     if [ ! -z $venv_output ]
     then
         # venv has output
