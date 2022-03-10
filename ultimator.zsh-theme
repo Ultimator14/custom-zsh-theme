@@ -67,7 +67,7 @@ function prompt_ret_status() {
     # $2 = failure color
     # $3 = success char
     # $4 = failure char
-    echo -n "%(?:%{$fg_bold[$1]%} $3 :%{$fg_bold[$2]%} $4 $LAST_EXIT_CODE )"
+    echo -n "%(?:%{$fg_bold[$1]%} $3 :%{$fg_bold[$2]%} $4 %? )"
 }
 
 function prompt_ret_status2() {
@@ -128,8 +128,6 @@ function prompt_virtualenv() {
 # Set prompt
 #
 build_prompt() {
-    # Save last exit code for later use
-    LAST_EXIT_CODE=$?
     # change colors if user is root
     if [ $(id -u) -eq 0 ]; then
         # colors for main prompt
@@ -188,8 +186,6 @@ build_prompt() {
 }
 
 build_prompt2() {
-    # Save last exit code for later use
-    LAST_EXIT_CODE=$?
     # change colors if user is root
     if [ $(id -u) -eq 0 ]; then
         # colors for main prompt
