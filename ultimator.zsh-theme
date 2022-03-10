@@ -114,6 +114,16 @@ function prompt_git() {
     git_super_status
 }
 
+function prompt_virtualenv() {
+    # $1 = foreground
+    # from https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/virtualenv/virtualenv.plugin.zsh
+    if [[ -n $VIRTUAL_ENV ]]; then
+        # https://zsh.sourceforge.io/Doc/Release/Expansion.html#Modifiers
+        # same as basename $VIRTUAL_ENV | <replace % with %%>
+        echo -n "%{$fg_no_bold[$1]%} ${VIRTUAL_ENV:t:gs/%/%%} "
+    fi
+}
+
 #
 # Set prompt
 #
@@ -137,22 +147,39 @@ build_prompt() {
         local color_dir_bg="blue"
     fi
 
+    # user@computer
     prompt_start "black"
     prompt_main "${color_user_fg}" "${color_at_fg}" "${color_computer_fg}"
     prompt_space
+
+    # dir
     prompt_segment_transition "${color_dir_bg}"
     prompt_dir "black"
+
+    # virtualenv
+    local venv_output=$(prompt_virtualenv "black")
+    if [ ! -z $venv_output ]
+    then
+        # venv has output
+        prompt_segment_transition "green"
+        echo -n "$venv_output"
+    fi
+
     # git
-    script_output=$(prompt_git "black" "yellow")
-    if [ ! -z $script_output ]
+    git_output=$(prompt_git "black" "yellow")
+    if [ ! -z $git_output ]
     then
         # git has output
         prompt_segment_transition "yellow"
-        echo -n "$script_output"
+        echo -n "$git_output"
     fi
+
+    # prompt end
     prompt_segment_transition "default"
     prompt_reset_color
     prompt_space
+
+    # ret_status2
     prompt_ret_status2 "green" "red"
     prompt_reset_color
     prompt_space
@@ -178,26 +205,44 @@ build_prompt2() {
         local color_dir_bg="blue"
     fi
 
+    # ret_status
     prompt_start "white"
     prompt_ret_status "green" "red" "✔" "✘"
+
+    # user@computer
     prompt_segment_transition "black"
     prompt_space
     prompt_main "${color_user_fg}" "${color_at_fg}" "${color_computer_fg}"
     prompt_space
+
+    # dir
     prompt_segment_transition "${color_dir_bg}"
     prompt_dir "black"
+
+    # virtualenv
+    local venv_output=$(prompt_virtualenv "black")
+    if [ ! -z $venv_output ]
+    then
+        # venv has output
+        prompt_segment_transition "green"
+        echo -n "$venv_output"
+    fi
+
     # git
-    script_output=$(prompt_git "black" "yellow")
-    if [ ! -z $script_output ]
+    local git_output=$(prompt_git "black" "yellow")
+    if [ ! -z $git_output ]
     then
         # git has output
         prompt_segment_transition "yellow"
-        echo -n "$script_output"
+        echo -n "$git_output"
     fi
+
+    # prompt end
     prompt_segment_transition "default"
     prompt_reset_color
     prompt_space
 }
+
 
 # Default prompt
 PROMPT='$(build_prompt)'
@@ -207,3 +252,7 @@ PROMPT='$(build_prompt)'
 
 # Clear rprompt
 RPROMPT=""
+
+# Disable automatic prompt alteration in virtual envs
+# (venv display is handled by this theme)
+VIRTUAL_ENV_DISABLE_PROMPT="1"
