@@ -25,7 +25,12 @@
 #
 
 # Arrow character from agnoster theme
-SEGMENT_SEPARATOR='%{\Ue0b0%G%}'
+SEGMENT_SEPARATOR='%{\Ue0b0%G%}'	# arrow
+#SEGMENT_SEPARATOR='%{\Ue0b4%G%}'	# round
+#SEGMENT_SEPARATOR='%{\Ue0bc%G%}'	# diagonal
+#SEGMENT_SEPARATOR='%{\Ue0b8%G%}'	# diagonal2
+#SEGMENT_SEPARATOR='%{\Ue0cc%G%}'	# hectagon
+
 
 # Variable holding the current background color to connect segments
 CURRENT_BG_COLOR="default"
@@ -98,7 +103,7 @@ function prompt_git() {
     local git_colors="%{$fg_no_bold[$1]%}%{$bg[$2]%}"
 
     # Set git variables
-    ZSH_THEME_GIT_PROMPT_PREFIX="${git_colors} %{\Uf126%G%} "   # branch (alternative e010)
+    ZSH_THEME_GIT_PROMPT_PREFIX="${git_colors} %{\Uf126%G%} "   # branch (alternative e010 or e0a0)
     ZSH_THEME_GIT_PROMPT_SUFFIX="${git_colors} "
     ZSH_THEME_GIT_PROMPT_DIRTY="${git_colors}%{\Uf00d%G%}"      # x
     ZSH_THEME_GIT_PROMPT_CLEAN="${git_colors}%{\Uf00c%G%}"      # checkmark
