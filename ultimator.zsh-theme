@@ -350,13 +350,24 @@ then
     # Default prompt
     PROMPT='$(build_prompt)'
 
-    # Set rprompt
-    RPROMPT='$(build_rprompt)'
+    # Clear rprompt
+    RPROMPT=''
 
     # Disable automatic prompt alteration in virtual envs
     # (venv display is handled by this theme)
     VIRTUAL_ENV_DISABLE_PROMPT="1"
 elif [ "$ZSH_THEME" = "ultimator2" ]
+then
+    # Alternatively with error status at the beginning
+    PROMPT='$(build_prompt2)'
+
+    # Clear rprompt
+    RPROMPT=''
+
+    # Disable automatic prompt alteration in virtual envs
+    # (venv display is handled by this theme)
+    VIRTUAL_ENV_DISABLE_PROMPT="1"
+elif [ "$ZSH_THEME" = "ultimator3" ]
 then
     # Alternatively with error status at the beginning
     PROMPT='$(build_prompt2)'
