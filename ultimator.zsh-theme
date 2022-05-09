@@ -30,6 +30,7 @@ SEGMENT_SEPARATOR='%{\Ue0b0%G%}'	# arrow
 #SEGMENT_SEPARATOR='%{\Ue0bc%G%}'	# diagonal
 #SEGMENT_SEPARATOR='%{\Ue0b8%G%}'	# diagonal2
 #SEGMENT_SEPARATOR='%{\Ue0cc%G%}'	# hectagon
+R_SEGMENT_SEPARATOR='%{\Ue0b2%G%}'	# inverse arrow
 
 
 # Variable holding the current background color to connect segments
@@ -40,8 +41,8 @@ CURRENT_BG_COLOR="default"
 #
 
 prompt_start() {
-    # start a new prompt with given foreground and background
-    # $1 = foreground
+    # start a new prompt with given background
+    # $1 = background
     echo -n "%{$bg[$1]%}"
     CURRENT_BG_COLOR="$1"
 }
@@ -54,7 +55,17 @@ prompt_segment_transition() {
     CURRENT_BG_COLOR="$1"
 }
 
+rprompt_segment_transition() {
+    # segment prompt with new segment being the default color
+    # (used at the end of the segments)
+    # IMPORTANT: transition to default is not possible between segments
+    echo -n "%{$fg_no_bold[$1]%}%{$bg[${CURRENT_BG_COLOR}]%}${R_SEGMENT_SEPARATOR}"
+    CURRENT_BG_COLOR="$1"
+    echo -n "%{$bg[$1]%}"
+}
+
 prompt_reset_color() {
+    CURRENT_BG_COLOR="default"
     echo -n "%{$reset_color%}"
 }
 
@@ -279,14 +290,56 @@ build_prompt2() {
     prompt_space
 }
 
+#
+# Rprompt functions
+#
+
+rprompt_ssh() {
+    # $1 = foreground
+    echo -n "%{$fg_no_bold[$1]%}ssh"
+}
+
+rprompt_sudo() {
+    # $1 = foreground
+    echo -n "%{$fg_no_bold[$1]%}${SUDO_USER}@%m"
+}
+
+#
+# Set right prompt
+#
+build_rprompt() {
+    if [[ -n "${SSH_CONNECTION}${SSH_CLIENT}${SSH_TTY}" ]] || [[ -n "${SUDO_USER}${SUDO_UID}${SUDO_GID}" ]]
+    then
+        # sudo is either ssh or sudo. Show rprompt
+            if [[ -n "${SUDO_USER}${SUDO_UID}${SUDO_GID}" ]]
+            then
+                # shell is sudo. Start with sudo prompt
+                rprompt_segment_transition "black"
+                prompt_space
+                rprompt_sudo "yellow"
+                prompt_space
+            fi
+
+            if [[ -n "${SSH_CONNECTION}${SSH_CLIENT}${SSH_TTY}" ]]
+            then
+                rprompt_segment_transition "cyan"
+                prompt_space
+                rprompt_ssh "black"
+                prompt_space
+            fi
+
+        prompt_reset_color
+    fi
+}
+
 # Set theme
 if [ "$ZSH_THEME" = "ultimator" ]
 then
     # Default prompt
     PROMPT='$(build_prompt)'
 
-    # Clear rprompt
-    RPROMPT=""
+    # Set rprompt
+    RPROMPT='$(build_rprompt)'
 
     # Disable automatic prompt alteration in virtual envs
     # (venv display is handled by this theme)
@@ -296,8 +349,8 @@ then
     # Alternatively with error status at the beginning
     PROMPT='$(build_prompt2)'
 
-    # Clear rprompt
-    RPROMPT=""
+    # Set rprompt
+    RPROMPT='$(build_rprompt)'
 
     # Disable automatic prompt alteration in virtual envs
     # (venv display is handled by this theme)
