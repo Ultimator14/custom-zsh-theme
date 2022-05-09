@@ -314,7 +314,7 @@ build_rprompt() {
             if [[ -n "${SUDO_USER}${SUDO_UID}${SUDO_GID}" ]]
             then
                 # shell is sudo. Start with sudo prompt
-                rprompt_segment_transition "black"
+                rprompt_segment_transition "strong-gray"
                 prompt_space
                 rprompt_sudo "yellow"
                 prompt_space
