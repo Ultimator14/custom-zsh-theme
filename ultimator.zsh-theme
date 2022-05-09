@@ -25,16 +25,28 @@
 #
 
 # Arrow character from agnoster theme
-SEGMENT_SEPARATOR='%{\Ue0b0%G%}'	# arrow
-#SEGMENT_SEPARATOR='%{\Ue0b4%G%}'	# round
-#SEGMENT_SEPARATOR='%{\Ue0bc%G%}'	# diagonal
-#SEGMENT_SEPARATOR='%{\Ue0b8%G%}'	# diagonal2
-#SEGMENT_SEPARATOR='%{\Ue0cc%G%}'	# hectagon
-R_SEGMENT_SEPARATOR='%{\Ue0b2%G%}'	# inverse arrow
+SEGMENT_SEPARATOR=${SEGMENT_SEPARATOR:-'%{\Ue0b0%G%}'}		# arrow
+#SEGMENT_SEPARATOR='%{\Ue0b4%G%}'				# round
+#SEGMENT_SEPARATOR='%{\Ue0bc%G%}'				# diagonal
+#SEGMENT_SEPARATOR='%{\Ue0b8%G%}'				# diagonal2
+#SEGMENT_SEPARATOR='%{\Ue0cc%G%}'				# hectagon
+R_SEGMENT_SEPARATOR=${R_SEGMENT_SEPARATOR:-'%{\Ue0b2%G%}'}	# inverse arrow
 
 
 # Variable holding the current background color to connect segments
 CURRENT_BG_COLOR="default"
+
+# Variables customizable by the user
+# If null, replace with defaults
+COLOR_USER=${COLOR_USER:-'red'}
+COLOR_AT=${COLOR_AT:-'green'}
+COLOR_COMPUTER=${COLOR_COMPUTER:-'blue'}
+COLOR_DIR=${COLOR_DIR:-'blue'}
+
+COLOR_USER_ROOT=${COLOR_USER_ROOT:-'red'}
+COLOR_AT_ROOT=${COLOR_AT_ROOT:-'red'}
+COLOR_COMPUTER_ROOT=${COLOR_COMPUTER_ROOT:-'red'}
+COLOR_DIR_ROOT=${COLOR_DIR_ROOT:-'red'}
 
 #
 # Helper functions
@@ -160,20 +172,20 @@ build_prompt() {
     # change colors if user is root
     if [ $(id -u) -eq 0 ]; then
         # colors for main prompt
-        local color_user_fg="red"
-        local color_at_fg="red"
-        local color_computer_fg="red"
+        local color_user_fg="$COLOR_USER_ROOT"
+        local color_at_fg="$COLOR_AT_ROOT"
+        local color_computer_fg="$COLOR_COMPUTER_ROOT"
 
         # colors for dir prompt
-        local color_dir_bg="red"
+        local color_dir_bg="$COLOR_DIR_ROOT"
     else
         # colors for main prompt
-        local color_user_fg="red"
-        local color_at_fg="green"
-        local color_computer_fg="blue"
+        local color_user_fg="$COLOR_USER"
+        local color_at_fg="$COLOR_AT"
+        local color_computer_fg="$COLOR_COMPUTER"
 
         # colors for dir prompt
-        local color_dir_bg="blue"
+        local color_dir_bg="$COLOR_DIR"
     fi
 
     # user@computer
@@ -227,20 +239,20 @@ build_prompt2() {
     # change colors if user is root
     if [ $(id -u) -eq 0 ]; then
         # colors for main prompt
-        local color_user_fg="red"
-        local color_at_fg="red"
-        local color_computer_fg="red"
+        local color_user_fg="$COLOR_USER_ROOT"
+        local color_at_fg="$COLOR_AT_ROOT"
+        local color_computer_fg="$COLOR_COMPUTER_ROOT"
 
         # colors for dir prompt
-        local color_dir_bg="red"
+        local color_dir_bg="$COLOR_DIR_ROOT"
     else
         # colors for main prompt
-        local color_user_fg="red"
-        local color_at_fg="green"
-        local color_computer_fg="blue"
+        local color_user_fg="$COLOR_USER"
+        local color_at_fg="$COLOR_AT"
+        local color_computer_fg="$COLOR_COMPUTER"
 
         # colors for dir prompt
-        local color_dir_bg="blue"
+        local color_dir_bg="$COLOR_DIR"
     fi
 
     # ret_status
