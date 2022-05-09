@@ -66,7 +66,7 @@ prompt_space() {
 # Prompt functions
 #
 
-function prompt_ret_status() {
+prompt_ret_status() {
     # Last command evaluation
     # $1 = success color
     # $2 = failure color
@@ -75,14 +75,14 @@ function prompt_ret_status() {
     echo -n "%(?:%{$fg_bold[$1]%} $3 :%{$fg_bold[$2]%} $4 %? )"
 }
 
-function prompt_ret_status2() {
+prompt_ret_status2() {
     # Last command evaluation alternative for end of shell
     # $1 = success color
     # $2 = failure color
     echo -n "%(?:%{$fg_bold[$1]%}:%{$fg_bold[$2]%})$"
 }
 
-function prompt_main() {
+prompt_main() {
     # Main Prompt fg creation (user@computername)
     # $1 = username foreground
     # $2 = at foreground
@@ -90,13 +90,13 @@ function prompt_main() {
     echo -n "%{$fg_bold[$1]%}%n%{$fg_bold[$2]%}@%{$fg_bold[$3]%}%m"
 }
 
-function prompt_dir() {
+prompt_dir() {
     # Dir prompt creation
     # $1 = foreground
     echo -n "%{$fg_no_bold[$1]%} %(5~|.../%3~|%~) "
 }
 
-function prompt_git() {
+prompt_git() {
     # Git color shortcuts
     # $1 = foreground
     # $2 = background
@@ -119,7 +119,7 @@ function prompt_git() {
     git_super_status
 }
 
-function prompt_virtualenv() {
+prompt_virtualenv() {
     # $1 = foreground
     # $2 = symbol
     # from https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/virtualenv/virtualenv.plugin.zsh
@@ -130,7 +130,7 @@ function prompt_virtualenv() {
     fi
 }
 
-function prompt_jobs() {
+prompt_jobs() {
     # $1 = foreground
     # $2 = running jobs symbol
     # $3 = suspended jobs symbol
