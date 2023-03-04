@@ -132,9 +132,9 @@ prompt_git() {
     ZSH_THEME_GIT_PROMPT_CLEAN="${git_colors}%{\Uf00c%G%}"      # checkmark
     ZSH_THEME_GIT_PROMPT_BRANCH="${git_colors}"
     ZSH_THEME_GIT_PROMPT_SEPARATOR="${git_colors}|"
-    ZSH_THEME_GIT_PROMPT_UNTRACKED="${git_colors}%{\Uf6d7%G%}"  # dots
-    ZSH_THEME_GIT_PROMPT_CHANGED="${git_colors}%{\Uf62f%G%}"    # empty circle
-    ZSH_THEME_GIT_PROMPT_STAGED="${git_colors}%{\Uf62e%G%}"     # full circle
+    ZSH_THEME_GIT_PROMPT_UNTRACKED="${git_colors}%{\Uf01d8%G%}" # dots
+    ZSH_THEME_GIT_PROMPT_CHANGED="${git_colors}%{\Uf0766%G%}"   # empty circle
+    ZSH_THEME_GIT_PROMPT_STAGED="${git_colors}%{\Uf0765%G%}"    # full circle
     ZSH_THEME_GIT_PROMPT_CONFLICTS="${git_colors}%{\Uf0e7%G%}"  # flash
     ZSH_THEME_GIT_PROMPT_AHEAD="${git_colors}%{\Uf176%G%}"      # arrow up
     ZSH_THEME_GIT_PROMPT_BEHIND="${git_colors}%{\Uf175%G%}"     # arrow down
