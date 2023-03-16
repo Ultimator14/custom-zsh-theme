@@ -320,7 +320,9 @@ rprompt_sudo() {
 # Set right prompt
 #
 build_rprompt() {
-    if [[ -n "${SSH_CONNECTION}${SSH_CLIENT}${SSH_TTY}" ]] || [[ -n "${SUDO_USER}${SUDO_UID}${SUDO_GID}" ]]
+	local num_sshd=$(pstree -s -p $$ | grep -c '\-sshd(')
+
+    if [[ $num_sshd > 0 ]] || [[ -n "${SUDO_USER}${SUDO_UID}${SUDO_GID}" ]]
     then
         # sudo is either ssh or sudo. Show rprompt
             if [[ -n "${SUDO_USER}${SUDO_UID}${SUDO_GID}" ]]
@@ -332,7 +334,7 @@ build_rprompt() {
                 prompt_space
             fi
 
-            if [[ -n "${SSH_CONNECTION}${SSH_CLIENT}${SSH_TTY}" ]]
+			if [[ $num_sshd > 0 ]]
             then
                 rprompt_segment_transition "cyan"
                 prompt_space
